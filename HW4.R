@@ -50,4 +50,36 @@ for(i in 8:length(weather$AirTemp)){airMA[i] = mean(weather$AirTemp[(i-7):i])}
 
 weather$airMA = airMA
 
+# parse date
+weather$dateF <- mdy_hm(weather$Date)
+# create a month column
+weather$doy <- yday(weather$dateF)
+# create a year column
+weather$year <- year(weather$dateF)
+
+# examine precipitation using a bar plot
+ggplot(data=weather[weather$doy > 121 & weather$doy < 274 ,],
+       aes(x=dateF,
+           y=Precip))+
+  geom_col(color="royalblue4")+
+  theme_classic()
+
+weather$precip.QC <- ifelse(weather$doy >= 121 & weather$doy <= 188 & weather$year == 2021, 
+                            # evaluate if the doy is between May 1 and July 7 2021
+                            NA, # value if true
+                            weather$Precip) # value if false: uses original precipitation observation
+
+weather$FreezeFlag <- ifelse(weather$AirTemp <= 0, # check if at or below zero
+                             1, # if true: set flag to 1
+                             0) # if false: set flag to zero
+
+
+
+#Start of Class Activity ----
+
+
+
+
+
+
 

@@ -78,8 +78,104 @@ weather$FreezeFlag <- ifelse(weather$AirTemp <= 0, # check if at or below zero
 #Start of Class Activity ----
 
 
+#Question 1 - Rolling Average ----
+
+jan22 = weather %>%
+  filter(year==2022 & doy<=31)
+
+airtemp = numeric()
+
+for(i in 8:length(jan22$AirTemp)){
+  airtemp[i] = mean(jan22$AirTemp[(i-7):i], na.rm = TRUE)}
+
+jan22$airtemprolling = airtemp
+
+ggplot(jan22, aes(x = dateF)) + 
+          geom_line(aes(y = AirTemp), color = "coral", alpha = 0.3)+
+          geom_line(aes(y = airtemp), color = "royalblue", alpha = 0.3) +
+          labs(x= "Date", y= "Air Temperature (Celcius)", title= "Air Temperature in January 2022")+
+          theme_classic()
+
+#OH Question: Same graph or different ----
+
+#Prompt 2: ----
+
+may_june21 = weather %>%
+  filter(year == 2021 & doy >= 121 & doy <= 181)
+
+ggplot(may_june21, aes(x = dateF, y = SolRad)) +
+  geom_line() +
+  theme_classic()
 
 
+precipt = may_june21 %>%
+  filter(Precip > 0)
+
+ggplot(precipt, aes(x = dateF, y = Precip)) +
+  geom_point() +
+  theme_classic()
+
+#OH NEED HELP ON HOW TO DO THIS ----
+
+#Prompt 3 - Time Change ----
+
+weather$date = mdy_hm(weather$Date)
+weather$dateET = mdy_hm(weather$Date, tz="America/New_York")
+
+weatherCheck = weather %>%
+  filter(is.na(weather$dateET))
+
+#The times listed are in pacific coast time, so four hours behind ET. You can switch the time and place it in New York (ET) time.
+
+#Start of HW Questions ----
+
+#Question 1 ----
+
+#No Freezing Temp Data
+weather$FreezeFlag = ifelse(weather$AirTemp <= 0, "Yes", "No")
+
+#No difference level greater than 2 between X and Y
+
+weather$xyflag = ifelse(weather$YLevel >= 2, "Yes", "No")
+
+weather$xyflag = ifelse(weather$XLevel >=2, "Yes", "No")
+
+#Dropping/Flagginf variables in precip
+
+weather$flagged_precip = weather$Precip
+
+weather$flagged_precip[weather$FreezeFlag == "Yes"] = NA
+weather$flagged_precip[weather$xyflag == "Yes"] = NA
+
+#Total Missing Precip Data
+
+missing_precip = sum(is.na(weather$flagged_precip))
+#14290 missing values
+
+#Question 2 ---- Flag for low battery
+
+weather$batteryflag = ifelse(weather$BatVolt <= 8.5, "Yes", "No")
+
+#Question 3 ----
+
+unrealcheck = function(x, minvalue, maxvalue){
+  ifelse(x < minvalue | x > maxvalue, "Yes", "No")}
+
+weather$AirTempFlag = unrealcheck(weather$AirTemp, -30, 30)
+weather$SolRadCheck = unrealcheck(weather$SolRad, 0, 1100)
+#Used google to help me with values
+
+#Question 4 ----
+
+winter2021 = weather %>%
+  filter(year == 2021, doy <= 90)
+
+ggplot(winter2021, aes(x = dateF, y = AirTemp)) +
+  geom_line(color = "royalblue") +
+  labs(x = "Date",y = "Air Temperature (Degrees C)", title = "Winter Air Temperature (Jan–Mar 2021)") +
+  theme_classic()
+
+#Question 5 ----
 
 
 

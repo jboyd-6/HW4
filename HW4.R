@@ -25,13 +25,13 @@ test
 test[-1]
 
 # x is a date vector
-timeCheck900 = function(x){
+timeCheck = function(x, interval_ammount){
   intervals = x[] %--% x[-1]
   interval_times = int_length(intervals)
-  intervals[interval_times != 900]
+  intervals[interval_times != interval_ammount]
 }
 
-timeCheck900(weather$date)
+timeCheck(weather$date)
 
 
 soilFiles = list.files("/cloud/project/activit04/soil")
@@ -44,6 +44,10 @@ str(soillist) #can look at dataframe or data to understand what youre working wi
 
 soilData = do.call("rbind", soillist)
 #calculate moving average
+
+soilData$date = mdy_hm(soilData$Date)
+soilData$dateET = mdy_hm(soilData$Date, tz = "America/New_York")
+
 airMA = numeric()
 
 for(i in 8:length(weather$AirTemp)){airMA[i] = mean(weather$AirTemp[(i-7):i])}
@@ -140,7 +144,7 @@ weather$xyflag = ifelse(weather$YLevel >= 2, "Yes", "No")
 
 weather$xyflag = ifelse(weather$XLevel >=2, "Yes", "No")
 
-#Dropping/Flagginf variables in precip
+#Dropping/Flagging variables in precip
 
 weather$flagged_precip = weather$Precip
 
@@ -152,17 +156,20 @@ weather$flagged_precip[weather$xyflag == "Yes"] = NA
 missing_precip = sum(is.na(weather$flagged_precip))
 #14290 missing values
 
+sum(is.na(weather$Precip))
+#1158 missing values
+
 #Question 2 ---- Flag for low battery
 
 weather$batteryflag = ifelse(weather$BatVolt <= 8.5, "Yes", "No")
 
 #Question 3 ----
 
-unrealcheck = function(x, minvalue, maxvalue){
+valuecheck = function(x, minvalue, maxvalue){
   ifelse(x < minvalue | x > maxvalue, "Yes", "No")}
 
-weather$AirTempFlag = unrealcheck(weather$AirTemp, -30, 30)
-weather$SolRadCheck = unrealcheck(weather$SolRad, 0, 1100)
+weather$AirTempFlag = valuecheck(weather$AirTemp, -35, 40)
+weather$SolRadCheck = valuecheck(weather$SolRad, 0, 1100)
 #Used google to help me with values
 
 #Question 4 ----
@@ -172,10 +179,54 @@ winter2021 = weather %>%
 
 ggplot(winter2021, aes(x = dateF, y = AirTemp)) +
   geom_line(color = "royalblue") +
-  labs(x = "Date",y = "Air Temperature (Degrees C)", title = "Winter Air Temperature (Jan–Mar 2021)") +
-  theme_classic()
-
+  labs(x = "Date",y = "Air Temperature (Degrees C)", title = "Winter Air Temperature (January to March 2021)") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5))
 #Question 5 ----
+
+MA2021 = weather %>%
+  filter(year == 2021, doy >= 60 & doy <= 120)
+
+MA2021$precip_degree = MA2021$Precip
+MA2021$AirTempF = MA2021$AirTemp * 9/5 + 32
+
+belowtemp = unique(MA2021$doy[MA2021$AirTempF < 35])
+
+for (i in belowtemp) {
+  MA2021$precip_degree[MA2021$doy == i] = NA
+  MA2021$precip_degree[MA2021$doy == i - 1] = NA
+}
+
+sum(is.na(MA2021$precip_degree))
+#4124 Observations dropped
+
+sum(!is.na(MA2021$precip_degree))
+#1728 Observations Total
+
+#Question 6----
+
+soilFiles = list.files("/cloud/project/activit04/soil")
+#set up variable to be used in for loop
+soillist = list()
+
+for(i in 1:length(soilFiles))
+{soillist[[i]] = read.csv(paste0("/cloud/project/activit04/soil/", soilFiles [i]))}
+str(soillist) #can look at dataframe or data to understand what youre working with
+
+soilData = do.call("rbind", soillist)
+#calculate moving average
+
+soilData$date = ymd_hm(soilData$Timestamp)
+
+timeCheck = function(x, interval_ammount){
+  intervals = x[] %--% x[-1]
+  interval_times = int_length(intervals)
+  intervals[interval_times != interval_ammount]
+}
+
+# run time check for non 60 min data
+timeCheck(soilData$date, 3600)
+
 
 
 

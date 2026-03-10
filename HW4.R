@@ -198,11 +198,11 @@ MA2021 = weather %>%
 MA2021$precip_degree = MA2021$Precip
 MA2021$AirTempF = MA2021$AirTemp * 9/5 + 32
 
-belowtemp = unique(MA2021$doy[MA2021$AirTempF < 35])
-
-for (i in belowtemp) {
-  MA2021$precip_degree[MA2021$doy == i] = NA
-  MA2021$precip_degree[MA2021$doy == i - 1] = NA
+for(i in 1:nrow(MA2021)){
+  if(MA2021$AirTempF[i] < 35){
+    MA2021$precip_degree[MA2021$doy == MA2021$doy[i]] = NA
+    MA2021$precip_degree[MA2021$doy == MA2021$doy[i] - 1] = NA
+  }
 }
 
 sum(is.na(MA2021$precip_degree))

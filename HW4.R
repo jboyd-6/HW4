@@ -100,10 +100,10 @@ ggplot(jan22, aes(x = dateF)) +
           labs(x= "Date", y= "Air Temperature (Celcius)", title= "Air Temperature in January 2022")+
           theme_classic()
 
-#OH Question: Same graph or different ----
-
 #Prompt 2: ----
 
+
+#How to do this----
 may_june21 = weather %>%
   filter(year == 2021 & doy >= 121 & doy <= 181)
 
@@ -119,8 +119,6 @@ ggplot(precipt, aes(x = dateF, y = Precip)) +
   geom_point() +
   theme_classic()
 
-#OH NEED HELP ON HOW TO DO THIS ----
-
 #Prompt 3 - Time Change ----
 
 weather$date = mdy_hm(weather$Date)
@@ -130,6 +128,17 @@ weatherCheck = weather %>%
   filter(is.na(weather$dateET))
 
 #The times listed are in pacific coast time, so four hours behind ET. You can switch the time and place it in New York (ET) time.
+
+timeCheck900 = function(x){
+  intervals = x[] %--% x[-1]
+  interval_times = int_length(intervals)
+  intervals[interval_times != 900]
+}
+
+timeCheck900(weather$date)
+
+#The time check shows day light savings as well as other jumps in time
+
 
 #Start of HW Questions ----
 

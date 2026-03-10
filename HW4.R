@@ -111,7 +111,6 @@ ggplot(may_june21, aes(x = dateF, y = SolRad)) +
   geom_line() +
   theme_classic()
 
-
 precipt = may_june21 %>%
   filter(Precip > 0)
 
@@ -188,7 +187,7 @@ winter2021 = weather %>%
 
 ggplot(winter2021, aes(x = dateF, y = AirTemp)) +
   geom_line(color = "royalblue") +
-  labs(x = "Date",y = "Air Temperature (Degrees C)", title = "Winter Air Temperature (January to March 2021)") +
+  labs(x = "Date",y = "Air Temperature (Degrees C)", title = "Clinton Winter Air Temperature (January to March 2021)") +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5))
 #Question 5 ----

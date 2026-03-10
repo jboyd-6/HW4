@@ -25,13 +25,13 @@ test
 test[-1]
 
 # x is a date vector
-timeCheck = function(x, interval_ammount){
+timeCheck900 = function(x){
   intervals = x[] %--% x[-1]
   interval_times = int_length(intervals)
-  intervals[interval_times != interval_ammount]
+  intervals[interval_times != 900]
 }
 
-timeCheck(weather$date)
+timeCheck900(weather$date)
 
 
 soilFiles = list.files("/cloud/project/activit04/soil")
@@ -45,8 +45,8 @@ str(soillist) #can look at dataframe or data to understand what youre working wi
 soilData = do.call("rbind", soillist)
 #calculate moving average
 
-soilData$date = mdy_hm(soilData$Date)
-soilData$dateET = mdy_hm(soilData$Date, tz = "America/New_York")
+#soilData$date = ymd_hm(soilData$Date)
+#soilData$dateET = ymd_hm(soilData$Date, tz = "America/New_York")
 
 airMA = numeric()
 
